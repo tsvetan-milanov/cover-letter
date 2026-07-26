@@ -32,6 +32,7 @@ jobs:
               const page = await browser.newPage();
               const htmlPath = path.resolve('index.html');
               await page.goto('file://' + htmlPath, { waitUntil: 'networkidle0' });
+              await page.evaluateHandle('document.fonts.ready');
               await page.pdf({
                 path: 'tsvetan_milanov_cv.pdf',
                 format: 'A4',
