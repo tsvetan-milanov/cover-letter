@@ -1,2 +1,2 @@
 # Tsvetan Milanov's CV
-https://github.com/tsetso-milanov/cover-letter
+https://tsvetan-milanov.github.io/cover-letter
