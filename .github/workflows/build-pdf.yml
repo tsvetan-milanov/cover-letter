@@ -1,0 +1,50 @@
+name: Build resume PDF
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+
+permissions:
+  contents: write
+
+jobs:
+  build-pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Puppeteer
+        run: npm install puppeteer
+
+      - name: Render HTML to PDF
+        run: |
+          node -e "
+            const puppeteer = require('puppeteer');
+            const path = require('path');
+            (async () => {
+              const browser = await puppeteer.launch();
+              const page = await browser.newPage();
+              const htmlPath = path.resolve('index.html');
+              await page.goto('file://' + htmlPath, { waitUntil: 'networkidle0' });
+              await page.pdf({
+                path: 'tsvetan_milanov_cv.pdf',
+                format: 'A4',
+                printBackground: true
+              });
+              await browser.close();
+            })();
+          "
+
+      - name: Commit updated PDF
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "tsvetan_milanov_cv.pdf"
+          git diff --staged --quiet || git commit -m "Auto-update resume PDF"
+          git push
